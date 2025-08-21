@@ -2,6 +2,7 @@ using System.Security.Claims;
 using InventoryApi.Dtos;
 using InventoryApi.Models;
 using InventoryApi.Services;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 
@@ -23,12 +24,19 @@ public class AuthController : ControllerBase
         _signInManager = signInManager;
         _tokenService = tokenService;
     }
-
+    
+    //POST: /api/register
     [HttpPost("register")]
     public async Task<IActionResult> Register([FromBody] RegisterDto dto)
     {
         var user = new AppUser { UserName = dto.Username, Email = dto.Email };
         var result = await _userManager.CreateAsync(user, dto.Password);
+        
+        var existingUser = await _userManager.FindByNameAsync(dto.Username);
+        var existingEmail = await _userManager.FindByEmailAsync(dto.Email);
+        
+        if (existingEmail != null) return BadRequest("Mail address already exists");
+        if (existingUser != null) return BadRequest("UserName already exists");
 
         if (!result.Succeeded)
         {
@@ -39,6 +47,7 @@ public class AuthController : ControllerBase
         return Ok("User created");
     }
 
+    //POST: api/login
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginDto dto)
     {
@@ -53,14 +62,5 @@ public class AuthController : ControllerBase
         return Ok(token);
     }
 
-    // private string GenerateJwtToken(AppUser user, IList<string> roles)
-    // {
-    //     var claims = new List<Claim>
-    //     {
-    //         new(ClaimTypes.NameIdentifier, user.Id),
-    //         new(ClaimTypes.Name, user.UserName!),
-    //         new(ClaimTypes.Email, user.Email!),
-    //     };
-    //     foreach (var role in roles){}
-    // }
+    
 }

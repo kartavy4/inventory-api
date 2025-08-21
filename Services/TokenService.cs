@@ -34,7 +34,7 @@ public class TokenService
 
         var token = new JwtSecurityToken(
             issuer: _config["Jwt:Issuer"],
-            audience: null,
+            audience: "InventoryApiUsers",
             claims: claims,
             expires:DateTime.UtcNow.AddHours(2),
             signingCredentials: creds

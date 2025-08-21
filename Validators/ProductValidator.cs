@@ -4,7 +4,7 @@ using InventoryApi.Models;
 
 namespace InventoryApi.Validators;
 
-public class ProductValidator : AbstractValidator<ProductDTO>
+public class ProductValidator : AbstractValidator<ProductDto>
 {
     public ProductValidator()
     {
@@ -16,7 +16,6 @@ public class ProductValidator : AbstractValidator<ProductDTO>
             .GreaterThan(0).WithMessage("Цена должна быть больше 0");
         RuleFor(p => p.Stock)
             .GreaterThanOrEqualTo(0);
-        RuleFor(p => p.Category)
-            .IsInEnum().WithMessage("Категория недоступана");
+        
     }
 }
